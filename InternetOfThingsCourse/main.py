@@ -1,11 +1,12 @@
 #!/usr/bin/python
-#P5 Mosquitto_Publisher_and Subscriber differents Threads
+#P6 Mosquitto Publisher, Subscriber, Pywapi Weather, Send Data Network
 #Miguel Tlapa Juarez
 #migueltlapa@gmail.com
 #May 5 2016
 #Internet of Things Course 
 import paho.mqtt.client as paho
 import psutil
+import pywapi
 import signal
 import sys
 import time
@@ -35,7 +36,7 @@ def dataNetworkHandler():
         time.sleep(1)
 
 def on_message(mosq, obj, msg):
-    print "MQTT dataMessageHandler %s %s" % (msg.topic, msg.payload)
+    print "dataMessageHandler %s %s" % (msg.topic, msg.payload)
 
 def dataMessageHandler():
     mqttclient = paho.Client()
@@ -44,6 +45,13 @@ def dataMessageHandler():
     mqttclient.subscribe("IoT101/Message", 0)
     while mqttclient.loop() == 0:
         pass
+
+def dataWeatherHandler():
+    weather = pywapi.get_weather_from_weather_com('MXJO0043', 'metric')
+    message = "Weather Report in " + weather['location']['name']
+    message = message + ", Temperature " + weather['current_conditions']['temperature'] + " C"
+    message = message + ", Atmospheric Pressure " + weather['current_conditions']['barometer']['reading'][:-3] + " mbar"
+    print message
 
 if __name__ == '__main__':
 
@@ -55,7 +63,11 @@ if __name__ == '__main__':
     threadx = Thread(target=dataMessageHandler)
     threadx.start()
 
+    dataWeatherHandler()
+
     while True:
         print "Hello Internet of Things 101"
         time.sleep(5)
+
+# End of File
 
