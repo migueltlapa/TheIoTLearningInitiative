@@ -5,6 +5,9 @@ import signal
 import sys
 import time
 
+def functionDataActuator():
+    print "Data Actuator"
+
 def functionDataSensor():
     netdata = psutil.net_io_counters()
     data = netdata.packets_sent + netdata.packets_recv
@@ -19,7 +22,7 @@ if __name__ == '__main__':
 
     while True:
         print "Hello Internet of Things 101"
-        print "Data Sensor: %s " % functionDataSensor()
+        print "Data Sensor: %s " % functionDataActuator()
         time.sleep(5)
 
-# End of File
+
