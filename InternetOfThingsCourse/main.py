@@ -22,7 +22,10 @@ from threading import Thread
 
 import plotly.plotly as py
 from plotly.graph_objs import Scatter, Layout, Figure
-
+relay=grove.GroveRelay(4)
+relay.off()
+relay.off()
+relay.off()
 
 #########################################################################
 # Flask Mdoule
@@ -94,12 +97,28 @@ def dataNetworkHandler():
 def on_message(mosq, obj, msg):
     print "MQTT dataMessageHandler %s %s" % (msg.topic, msg.payload)
 
+def functionDataActuator(status):
+    print "Data Actuator Status %s" % status
+    
+    if status == "0":
+        relay.off()
+        
+    else:
+        relay.on()
+        
+
+
+def functionDataActuatorMqttOnMessage(mosq, obj, msg):
+    print "Data Sensor Mqtt Subscribe Message!"
+    functionDataActuator(msg.payload)
+
+
 def dataMessageHandler():
     idDevice = GetMACAddress()
     mqttclient = paho.Client()
-    mqttclient.on_message = on_message
+    mqttclient.on_message = functionDataActuatorMqttOnMessage
     mqttclient.connect("test.mosquitto.org", 1883, 60)
-    mqttclient.subscribe("IoT101/" + idDevice + "Message", 0)
+    mqttclient.subscribe("IoT101/" + idDevice + "Message/Actuator", 0)
     while mqttclient.loop() == 0:
         pass
 
