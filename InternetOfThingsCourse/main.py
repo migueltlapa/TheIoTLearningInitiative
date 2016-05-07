@@ -13,6 +13,7 @@ import time
 import uuid
 import client as mqtt
 import json
+import pyupm_grove as grove
 
 from flask import Flask
 from flask_restful import Api, Resource
@@ -68,12 +69,14 @@ def dataNetwork():
 
 
 def dataDweetHandler():   # Freeboard
+    light = grove.GroveLight(0)
     data = {}
     while True:
         data['alive'] = "1"
         data['network'] = dataNetwork()
+        data['light']   = light.value()
         dweepy.dweet_for('InternetOfThings101x00', data)
-        time.sleep(10)
+        time.sleep(5)
 
 
 def dataNetworkHandler():
